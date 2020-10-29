@@ -1,0 +1,27 @@
+class Solution(object):
+    def canJump(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: bool
+        """
+        
+        def canJumpPosition(position,mem,nums):
+            for i in range(position,-1,-1):
+                nextLarge = min(i+nums[i],len(nums)-1)
+                for j in range(nextLarge,i,-1):
+                    if mem[j]== 'G':
+                        mem[i]= 'G'
+                        #print mem
+                        break
+                if mem[i]!='G':
+                    mem[i]='B'
+            if mem[0]=='G':
+                return True
+            else:
+                return False
+            
+        n = len(nums)
+        mem = ["U"]*(n-1)+['G']
+        return canJumpPosition(n-1,mem,nums)
+            
+    
