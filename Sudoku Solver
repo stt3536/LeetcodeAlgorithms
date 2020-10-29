@@ -1,0 +1,93 @@
+class Solution(object):
+    def solveSudoku(self, board):
+        """
+        :type board: List[List[str]]
+        :rtype: None Do not return anything, modify board in-place instead.
+        """
+        def isValidSudoku(board):
+            arr_horizon = []
+            arr_vertical = []
+            for i in range(9):
+                for j in range(9):
+                    if board[i][j]!=".":
+                        if board[i][j] not in arr_horizon:
+                            arr_horizon.append(board[i][j])
+                        else:
+                            #print "horizon"
+                            return False
+                    if board[j][i]!=".":
+                        if board[j][i] not in arr_vertical:
+                            arr_vertical.append(board[j][i])
+                        else:
+                            #print "vertical"
+                            return False
+                del arr_horizon[:]
+                del arr_vertical[:]
+            arr_square = []
+            for i in range(3):
+                for j in range(3):
+                    for k in range(3):
+                        for l in range(3):
+                            element = board[i*3+k][j*3+l]
+                            if element!=".":
+                                if element not in arr_square:
+                                    arr_square.append(element)
+                                else:
+                                    #print "square"
+                                    return False
+                    del arr_square[:]
+            return True
+    
+        def seekCandidates(board,i,j):
+            candidates = [str(k) for k in range(1,10)]
+            for k in range(9):
+                if board[k][j] in candidates:
+                    candidates.remove(board[k][j])
+                if board[i][k] in candidates:
+                    candidates.remove(board[i][k])
+            for k in range(3):
+                for l in range(3):
+                    if board[i/3*3+k][j/3*3+l] in candidates:
+                        candidates.remove(board[i/3*3+k][j/3*3+l])
+            return candidates
+
+        def seekFirstBlank(board):
+            max_num = 9
+            current_i = 9 
+            current_j = 9
+            for i in range(9):
+                for j in range(9):
+                    if board[i][j]==".":
+                        num = len(seekCandidates(board,i,j))
+                        if num<max_num:
+                            max_num = num
+                            current_i = i
+                            current_j = j 
+                        
+            return (current_i,current_j)
+
+        def isCompleteSudoku(board):
+            i,j = seekFirstBlank(board)
+            if i==9 and j==9:
+                return True
+            else:
+                False
+
+        if isCompleteSudoku(board):
+            return board
+        else:
+            i,j = seekFirstBlank(board)
+            #print (i,j)
+            candidates = seekCandidates(board,i,j)
+            for k in candidates:
+                board[i][j]=str(k)
+                #print i,j,board[i][j]
+                #print board
+                if isValidSudoku(board):
+                    self.solveSudoku(board)
+                    #print board[i][j]
+                    if isCompleteSudoku(board):
+                        break
+                board[i][j] ="."
+
+            return board
